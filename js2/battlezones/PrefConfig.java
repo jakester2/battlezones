@@ -14,12 +14,16 @@ import org.bukkit.configuration.file.YamlConfiguration;
 /**
  * This class handles config file configuration.
  * 
- * @TODO Set preferences to static variables.
+ * @TODO Add detailed preferences for high flexibility.
  * 
  * @author Jacob Tyo
- * @version 12/10/2011
+ * @version 12/11/2011
  */
 public class PrefConfig {
+    public static final String PREF_ENABLED = "enabled";
+    public static final String PREF_RELEASE_MEM = "release-mem";
+    public static final String PREF_DEBUG = "debug";
+    
     private BattleZones plugin;
     private File configFile;
     private FileConfiguration config;
@@ -50,9 +54,9 @@ public class PrefConfig {
     private void defaults()
     {
         boolean hasChanged = false;
-        if (!getConfig().contains("enabled")) { getConfig().createSection("enabled"); getConfig().set("enabled", true); hasChanged = true; }
-        if (!getConfig().contains("release_memory_on_logout")) { getConfig().createSection("release_memory_on_logout"); getConfig().set("release_memory_on_logout", true); hasChanged = true; }
-        if (!getConfig().contains("debug")) { getConfig().createSection("debug"); getConfig().set("debug", false); hasChanged = true; }
+        if (!getConfig().contains(PREF_ENABLED)) { getConfig().createSection(PREF_ENABLED); getConfig().set(PREF_ENABLED, true); hasChanged = true; }
+        if (!getConfig().contains(PREF_RELEASE_MEM)) { getConfig().createSection(PREF_RELEASE_MEM); getConfig().set(PREF_RELEASE_MEM, true); hasChanged = true; }
+        if (!getConfig().contains(PREF_DEBUG)) { getConfig().createSection(PREF_DEBUG); getConfig().set(PREF_DEBUG, false); hasChanged = true; }
         if (hasChanged) {
             try {
                 savePrefs();
@@ -70,9 +74,11 @@ public class PrefConfig {
     {
         getConfig().options().header("Modify settings to the " + plugin.getDescription().getName() + " plugin.\n"
                 + "\n"
-                + "enabled - Enabled or disable the plugin.\n"
+                + PREF_ENABLED + " - Enabled or disable the plugin.\n"
                 + "\n"
-                + "debug - Enable or disable debug mode. This provides more detailed printouts.");
+                + PREF_RELEASE_MEM + " - Release player data from memory on logout.\n"
+                + "\n"
+                + PREF_DEBUG + " - Enable or disable debug mode. This provides more detailed printouts.");
         getConfig().save(configFile);
     }
 
