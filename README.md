@@ -20,10 +20,14 @@ Commands
 
 Permissions
 -----------
-- `battlezones.help`
+Permissions for BattleZones commands to be called.
+- `battlezones.bz`
+Permissions for their respective commands.
+- `battlezones.help` 
 - `battlezones.add`
 - `battlezones.remove`
 - `battlezones.enable`
 - `battlezones.disable`
 - `battlezones.list`
+Permissions for allowing PvP interaction. Whether inside a zone or not.
 - `battlezones.pvp`
