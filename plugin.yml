@@ -4,9 +4,9 @@
 ---
 name: BattleZones
 main: js2.battlezones.BattleZones
-version: 0.0.04 [1566]
+version: 0.0.07 [1566]
 commands:
    bz:
       description: Print help info for BattleZones.
-      permission: battlezones
+      permission: battlezones.bz
       usage: /bz
