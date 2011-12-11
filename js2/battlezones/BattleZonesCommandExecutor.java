@@ -88,11 +88,11 @@ public class BattleZonesCommandExecutor implements CommandExecutor {
     private void printHelp(CommandSender sender, Command cmd, String string, String[] strings) {
         Message.sendRaw(sender, "------------ " + plugin.getDescription().getFullName() + " ------------");
         Message.sendRaw(sender, "- " + CMD_USAGE_HELP + " - " + CMD_DESC_HELP + "");
-        Message.sendRaw(sender, "- " + (player == null ? CMD_USAGE_ADD_CONSOLE : CMD_USAGE_ADD) + " - " + CMD_DESC_ADD + "");
-        Message.sendRaw(sender, "- " + CMD_USAGE_REMOVE + " - " + CMD_DESC_REMOVE + "");
-        Message.sendRaw(sender, "- " + CMD_USAGE_ENABLE + " - " + CMD_DESC_ENABLE + "");
-        Message.sendRaw(sender, "- " + CMD_USAGE_DISABLE + " - " + CMD_DESC_DISABLE + "");
-        Message.sendRaw(sender, "- " + CMD_USAGE_LIST + " - " + CMD_DESC_LIST + "");
+        if (sender.hasPermission("battlezones.add")) Message.sendRaw(sender, "- " + (player == null ? CMD_USAGE_ADD_CONSOLE : CMD_USAGE_ADD) + " - " + CMD_DESC_ADD + "");
+        if (sender.hasPermission("battlezones.remove")) Message.sendRaw(sender, "- " + CMD_USAGE_REMOVE + " - " + CMD_DESC_REMOVE + "");
+        if (sender.hasPermission("battlezones.enable")) Message.sendRaw(sender, "- " + CMD_USAGE_ENABLE + " - " + CMD_DESC_ENABLE + "");
+        if (sender.hasPermission("battlezones.disable")) Message.sendRaw(sender, "- " + CMD_USAGE_DISABLE + " - " + CMD_DESC_DISABLE + "");
+        if (sender.hasPermission("battlezones.list")) Message.sendRaw(sender, "- " + CMD_USAGE_LIST + " - " + CMD_DESC_LIST + "");
     }
 
     /**
