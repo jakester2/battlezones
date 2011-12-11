@@ -150,7 +150,7 @@ public class BattleZonesCommandExecutor implements CommandExecutor {
                     String[] zoneData = it.next().split("\\.");
                     boolean isEnabled = plugin.zoneConfig.getConfig().getBoolean("zones." + zoneData[0] + "." + zoneData[1] + ".enabled");
                     ChatColor prefix = (isEnabled) ? ChatColor.GREEN : ChatColor.RED;
-                    Message.sendRaw(sender, prefix + "- [" + zoneData[0] + "] " + zoneData[1] + " - " + ((isEnabled) ? "Enabled" : "Disabled"));
+                    Message.sendRaw(sender, prefix + "- [" + zoneData[0] + "] " + zoneData[1] + " [" + plugin.pvpHandler.getNumPlayersInZone(plugin.getServer().getWorld(zoneData[0]), zoneData[1]) + "] - " + ((isEnabled) ? "Enabled" : "Disabled"));
                 }
             }
         }
