@@ -15,7 +15,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
  * 
  * 
  * @author Jacob Tyo
- * @version 12/08/2011
+ * @version 12/10/2011
  */
 public class PrefConfig {
     private BattleZones plugin;
