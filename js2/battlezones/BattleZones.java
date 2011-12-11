@@ -42,13 +42,13 @@ public class BattleZones extends JavaPlugin {
     
     @Override
     public void onDisable() {
-        LOG.info((Message.getPrefix() + "Plugin Disabled!"));
+    LOG.log(Level.INFO, (Message.getPrefix() + "Plugin Disabled!"));
     }
 
     @Override
     public void onEnable() {
-        preprocess();
         init();
+        preprocess();
         run();
     }
 
@@ -56,7 +56,6 @@ public class BattleZones extends JavaPlugin {
      * Initialize all variables.
      */
     private void init() {
-        if (!enabled) return;
         LOG.log(Level.INFO, (Message.getPrefix() + "Initializing..."));
         enabled                             = true;
         nestedZones                         = new ArrayList<String>();
@@ -74,6 +73,7 @@ public class BattleZones extends JavaPlugin {
      * and apply global plugin settings.
      */
     private void run() {
+        if (!enabled) return;
         getCommand("bz").setExecutor(commandExecutor);
         indexZones(true);
         zoneConfig.reloadZoneSet();
@@ -114,7 +114,7 @@ public class BattleZones extends JavaPlugin {
     private void preprocess() {
         if (!prefConfig.getConfig().getBoolean(PrefConfig.PREF_ENABLED))
         {
-            LOG.info((Message.getPrefix() + "Plugin not enabled. See config.yml..."));
+            LOG.log(Level.INFO, (Message.getPrefix() + "Plugin not enabled. See config.yml..."));
             enabled = false;
             return;
         }
