@@ -15,9 +15,12 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 /**
- *
+ * @TODO Refactor code
+ * @TODO Document all methods
+ * @TODO Fix incorrect documentation
+ * 
  * @author Jacob Tyo
- * @version 12/08/2011
+ * @version 12/09/2011
  */
 public class BattleZones extends JavaPlugin {
     public static final Logger LOG = Logger.getLogger("Minecraft");
@@ -57,7 +60,9 @@ public class BattleZones extends JavaPlugin {
         getCommand("bz").setExecutor(executor);
         indexZones(true);
         zoneConfig.reloadZoneSet();
-        manager.registerEvent(Event.Type.PLAYER_MOVE, movementListener, Event.Priority.Low, this);
+        manager.registerEvent(Event.Type.PLAYER_JOIN, pvpHandler, Event.Priority.Normal, this);
+        manager.registerEvent(Event.Type.PLAYER_QUIT, pvpHandler, Event.Priority.Normal, this);
+        manager.registerEvent(Event.Type.PLAYER_MOVE, movementListener, Event.Priority.Normal, this);
         LOG.log(Level.INFO, (Message.getPrefix() + getDescription().getName() + " Enabled! Version: " + getDescription().getVersion()));
     }
 
@@ -72,6 +77,7 @@ public class BattleZones extends JavaPlugin {
                 for (Iterator<String> zones = zoneSet.iterator(); zones.hasNext();) {
                     String zoneName = zones.next();
                     nestedZones.add(worldName + "." + zoneName);
+                    if (!pvpHandler.isGlobalPVPEnabled(getServer().getWorld(worldName))) pvpHandler.setGlobalPVP(getServer().getWorld(worldName), true);
                 }
             }
         }
