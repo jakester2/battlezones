@@ -6,11 +6,11 @@
 package js2.battlezones;
 
 import java.util.Iterator;
+import java.util.logging.Level;
 import javax.vecmath.Point3i;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerListener;
 import org.bukkit.event.player.PlayerMoveEvent;
 
@@ -18,11 +18,12 @@ import org.bukkit.event.player.PlayerMoveEvent;
  * 
  * 
  * @author Jacob Tyo
- * @version 12/08/2011
+ * @version 12/10/2011
  */
 public class BattleZonesMovementListener extends PlayerListener {
     public BattleZones plugin;
-    public FileConfiguration config;
+    public FileConfiguration zoneConfig;
+    public FileConfiguration prefConfig;
     
     public BattleZonesMovementListener(BattleZones plugin)
     {
@@ -32,7 +33,8 @@ public class BattleZonesMovementListener extends PlayerListener {
     private void init(BattleZones plugin)
     {
         this.plugin                     = plugin;
-        config                          = plugin.zoneConfig.getConfig();
+        zoneConfig                      = plugin.zoneConfig.getConfig();
+        prefConfig                      = plugin.prefConfig.getConfig();
     }
     
     public boolean isIntersecting(Location pLocation, Point3i zonePos1, Point3i zonePos2)
@@ -56,29 +58,51 @@ public class BattleZonesMovementListener extends PlayerListener {
         super.onPlayerMove(event);
         if (!plugin.isZonesSet) return;
         if (isSameBlock(event.getTo(), event.getFrom().getBlock().getLocation())) return;
+        boolean isInsideZone = false;
         for (Iterator<String> it = plugin.nestedZones.iterator(); it.hasNext();) {
             String[] string = it.next().split("\\.");
-            if (string[0].equals(event.getPlayer().getWorld().getName()) && config.getBoolean("zones." + string[0] + "." + string[1] + ".enabled")) {
+            if (string[0].equals(event.getPlayer().getWorld().getName()) && zoneConfig.getBoolean("zones." + string[0] + "." + string[1] + ".enabled")) {
                 String root = "zones." + string[0] + "." + string[1] + ".";
-                if (isIntersecting(event.getTo(), 
-                        new Point3i(config.getInt(root + "x1"), config.getInt(root + "y1"), config.getInt(root + "z1")), 
-                        new Point3i(config.getInt(root + "x2"), config.getInt(root + "y2"), config.getInt(root + "z2"))) &&
-                    !isIntersecting(event.getFrom(), 
-                        new Point3i(config.getInt(root + "x1"), config.getInt(root + "y1"), config.getInt(root + "z1")), 
-                        new Point3i(config.getInt(root + "x2"), config.getInt(root + "y2"), config.getInt(root + "z2"))))
+                String currentZone = plugin.pvpHandler.playerZoneMap.get(event.getPlayer().getName());
+                boolean isOldZonePVP = isIntersecting(event.getFrom(), 
+                        new Point3i(zoneConfig.getInt(root + "x1"), zoneConfig.getInt(root + "y1"), zoneConfig.getInt(root + "z1")), 
+                        new Point3i(zoneConfig.getInt(root + "x2"), zoneConfig.getInt(root + "y2"), zoneConfig.getInt(root + "z2")));
+                boolean isNewZonePVP = isIntersecting(event.getTo(),
+                        new Point3i(zoneConfig.getInt(root + "x1"), zoneConfig.getInt(root + "y1"), zoneConfig.getInt(root + "z1")), 
+                        new Point3i(zoneConfig.getInt(root + "x2"), zoneConfig.getInt(root + "y2"), zoneConfig.getInt(root + "z2")));
+                // Is walking inside a zone
+                if (plugin.pvpHandler.playerHasPVPPermissions(event.getPlayer()) &&
+                    currentZone.equals(string[0] + "." + string[1]) && isNewZonePVP && isOldZonePVP)
                 {
+                    isInsideZone = true;
+                }
+                // If entering zone from outside the zone.
+                else if (plugin.pvpHandler.playerHasPVPPermissions(event.getPlayer()) && isNewZonePVP && !isOldZonePVP)
+                {
+                    if (prefConfig.getBoolean("debug")) BattleZones.LOG.log(Level.INFO, (Message.getPrefix() + event.getPlayer().getName() + " entered the zone: " + string[1]));
+                    plugin.pvpHandler.setPlayerPVP(event.getPlayer(), true);
+                    plugin.pvpHandler.playerZoneMap.put(event.getPlayer().getName(), string[0] + "." + string[1]);
+                    isInsideZone = true;
                     Message.send(event.getPlayer(), "Entered: " + string[1] + ". PvP " + ChatColor.GREEN + "ON!");
                 }
-                else if (isIntersecting(event.getFrom(), 
-                        new Point3i(config.getInt(root + "x1"), config.getInt(root + "y1"), config.getInt(root + "z1")), 
-                        new Point3i(config.getInt(root + "x2"), config.getInt(root + "y2"), config.getInt(root + "z2"))) &&
-                    !isIntersecting(event.getTo(), 
-                        new Point3i(config.getInt(root + "x1"), config.getInt(root + "y1"), config.getInt(root + "z1")), 
-                        new Point3i(config.getInt(root + "x2"), config.getInt(root + "y2"), config.getInt(root + "z2"))))
+                // If walking from one zone to another
+                else if (plugin.pvpHandler.playerHasPVPPermissions(event.getPlayer()) &&
+                    !currentZone.equals(string[0] + "." + string[1]) && isNewZonePVP && !isOldZonePVP)
                 {
-                    Message.send(event.getPlayer(), "Leaving: " + string[1] + ". PvP " + ChatColor.RED + "OFF.");
+                    plugin.pvpHandler.setPlayerPVP(event.getPlayer(), true);
+                    plugin.pvpHandler.playerZoneMap.put(event.getPlayer().getName(), string[0] + "." + string[1]);
+                    isInsideZone = true;
+                    Message.send(event.getPlayer(), "Entered: " + string[1] + ". PvP " + ChatColor.GREEN + "ON!");
                 }
             }
+        }
+        // If leaving a zone
+        if (!isInsideZone && !plugin.pvpHandler.playerZoneMap.get(event.getPlayer().getName()).equals(""))
+        {
+            if (prefConfig.getBoolean("debug")) BattleZones.LOG.log(Level.INFO, (Message.getPrefix() + event.getPlayer().getName() + " left the zone: " + plugin.pvpHandler.playerZoneMap.get(event.getPlayer().getName())));
+            plugin.pvpHandler.setPlayerPVP(event.getPlayer(), false);
+            plugin.pvpHandler.playerZoneMap.put(event.getPlayer().getName(), "");
+            Message.send(event.getPlayer(), "Leaving Zone PvP " + ChatColor.RED + "OFF!");
         }
     }
     
