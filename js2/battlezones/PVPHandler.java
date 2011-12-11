@@ -20,7 +20,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
  * This class handles all PvP related control for the plugin.
  * 
  * @author Jacob Tyo
- * @version 12/10/2011
+ * @version 12/11/2011
  */
 public class PVPHandler extends PlayerListener {
     public BattleZones plugin;
@@ -155,7 +155,7 @@ public class PVPHandler extends PlayerListener {
     @Override
     public void onPlayerQuit(PlayerQuitEvent event) {
         super.onPlayerQuit(event);
-        if (plugin.prefConfig.getConfig().getBoolean("release_memory_on_logout"))
+        if (plugin.prefConfig.getConfig().getBoolean(PrefConfig.PREF_RELEASE_MEM))
         {
             playerPvPMap.remove(event.getPlayer().getName());
             playerZoneMap.remove(event.getPlayer().getName());
