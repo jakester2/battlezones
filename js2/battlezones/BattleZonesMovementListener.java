@@ -19,7 +19,7 @@ import org.bukkit.event.player.PlayerMoveEvent;
  * a {@link Player} enters or leaves a registered PvP zone.
  * 
  * @author Jacob Tyo
- * @version 12/10/2011
+ * @version 12/11/2011
  */
 public class BattleZonesMovementListener extends PlayerListener {
     public BattleZones plugin;
@@ -107,7 +107,7 @@ public class BattleZonesMovementListener extends PlayerListener {
                 // If entering zone from outside the zone.
                 else if (plugin.pvpHandler.playerHasPVPPermissions(event.getPlayer()) && isNewZonePVP && !isOldZonePVP)
                 {
-                    if (prefConfig.getBoolean("debug")) BattleZones.LOG.log(Level.INFO, (Message.getPrefix() + event.getPlayer().getName() + " entered the zone: " + string[1]));
+                    if (prefConfig.getBoolean(PrefConfig.PREF_DEBUG)) BattleZones.LOG.log(Level.INFO, (Message.getPrefix() + event.getPlayer().getName() + " entered the zone: " + string[1]));
                     plugin.pvpHandler.setPlayerPVP(event.getPlayer(), true);
                     plugin.pvpHandler.playerZoneMap.put(event.getPlayer().getName(), string[0] + "." + string[1]);
                     isInsideZone = true;
@@ -127,7 +127,7 @@ public class BattleZonesMovementListener extends PlayerListener {
         // If leaving a zone
         if (!isInsideZone && !plugin.pvpHandler.playerZoneMap.get(event.getPlayer().getName()).equals(""))
         {
-            if (prefConfig.getBoolean("debug")) BattleZones.LOG.log(Level.INFO, (Message.getPrefix() + event.getPlayer().getName() + " left the zone: " + plugin.pvpHandler.playerZoneMap.get(event.getPlayer().getName())));
+            if (prefConfig.getBoolean(PrefConfig.PREF_DEBUG)) BattleZones.LOG.log(Level.INFO, (Message.getPrefix() + event.getPlayer().getName() + " left the zone: " + plugin.pvpHandler.playerZoneMap.get(event.getPlayer().getName())));
             plugin.pvpHandler.setPlayerPVP(event.getPlayer(), false);
             plugin.pvpHandler.playerZoneMap.put(event.getPlayer().getName(), "");
             Message.send(event.getPlayer(), "Leaving Zone PvP " + ChatColor.RED + "OFF!");
