@@ -9,17 +9,16 @@ import java.util.logging.Level;
 import javax.vecmath.Point3i;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
-import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerListener;
 
 /**
- * 
+ * This class handles the creation of zones. It will ask the user to select two
+ * blocks and use their locations to create a cuboid then register it as a PvP zone.
  * 
  * @author Jacob Tyo
- * @version 12/08/2011
+ * @version 12/10/2011
  */
 public class CuboidHandler extends PlayerListener {
     public BattleZones plugin;
@@ -31,12 +30,22 @@ public class CuboidHandler extends PlayerListener {
     public String zoneName;
     public String worldName;
     
+    /**
+     * Create a new instance of {@code CuboidHandler}.
+     * @param plugin Parent {@link BattleZones} instance.
+     * @param sender Source of the command
+     * @param zoneName Name of new zone to create
+     * @param worldName Name of world the zone will reside in
+     */
     public CuboidHandler(BattleZones plugin, CommandSender sender, String zoneName, String worldName)
     {
         init(plugin, sender, zoneName, worldName);
         make();
     }
     
+    /**
+     * Initialize all variables.
+     */
     private void init(BattleZones plugin, CommandSender sender, String zoneName, String worldName) {
         this.plugin                     = plugin;
         this.sender                     = sender;
@@ -44,10 +53,18 @@ public class CuboidHandler extends PlayerListener {
         this.worldName                  = worldName;
     }
     
+    /**
+     * Provide initial setup for CuboidHandler. Apply class settings here.
+     */
     private void make() {
         plugin.manager.registerEvent(Event.Type.PLAYER_INTERACT, this, Event.Priority.Low, plugin);
     }
     
+    /**
+     * This method creates a {@code Thread} that requests the player to select
+     * two blocks that will ultimately become position1 and position2 of the new
+     * cuboid.
+     */
     public void requestCuboid()
     {
         if (sender.getServer().getWorld(worldName) == null) {
@@ -76,15 +93,18 @@ public class CuboidHandler extends PlayerListener {
                     pos1.z = buffer;
                 }
                 plugin.zoneConfig.addZone(sender, zoneName, worldName, true, pos1, pos2);
-                ((Player) sender).getWorld().getBlockAt(pos1.x, pos1.y, pos1.z).setTypeId(57);
-                ((Player) sender).getWorld().getBlockAt(pos2.x, pos2.y, pos2.z).setTypeId(41);
             }
         });
         requestThread.start();
     }
     
+    /**
+     * Request a specific block for the formation of the cuboid.
+     * @param requesting Which block to request. Between 1 and 2.
+     */
     public void requestBlockPos(int requesting)
     {
+        if (requesting < 1 || requesting > 2) return;
         isWaiting = true;
         this.requesting = requesting;
         Message.send(sender, Message.LEVEL_SPECIAL, "Punch a block to set position " + this.requesting + "...");
@@ -101,6 +121,10 @@ public class CuboidHandler extends PlayerListener {
         }
     }
     
+    /**
+     * Called when a player clicks an entity.
+     * @param event Relevant event details
+     */
     @Override
     public void onPlayerInteract(PlayerInteractEvent event) {
         super.onPlayerInteract(event);
@@ -119,16 +143,5 @@ public class CuboidHandler extends PlayerListener {
             }
         }
     }
-
-    @Override
-    public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
-        super.onPlayerCommandPreprocess(event);
-        if (sender.getName().equals(event.getPlayer().getName()) && isWaiting == true) {
-            isWaiting = false;
-            Message.send(sender, Message.LEVEL_ERROR, "Aborted...");
-        }
-    }
-    
-    
 
 }

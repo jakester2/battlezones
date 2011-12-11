@@ -19,15 +19,21 @@ import org.bukkit.plugin.java.JavaPlugin;
  * @TODO Document all methods
  * @TODO Fix incorrect documentation
  * 
+ * BattleZones is a CraftBukkit plugin.
+ * 
+ * BattleZones allows for the creation of simple - open PvP arenas where players
+ * may enter and leave as they wish, without having to set up lobbies and matches.
+ * 
  * @author Jacob Tyo
- * @version 12/09/2011
+ * @version 12/10/2011
  */
 public class BattleZones extends JavaPlugin {
     public static final Logger LOG = Logger.getLogger("Minecraft");
     
     public ArrayList<String> nestedZones;
-    public BattleZonesCommandExecutor executor;
+    public BattleZonesCommandExecutor commandExecutor;
     public BattleZonesMovementListener movementListener;
+    public BattleZonesEntityListener entityListener;
     public boolean isZonesSet;
     public PluginManager manager;
     public PrefConfig prefConfig;
@@ -45,27 +51,43 @@ public class BattleZones extends JavaPlugin {
         run();
     }
 
+    /**
+     * Initialize all variables.
+     */
     private void init() {
         LOG.log(Level.INFO, (Message.getPrefix() + "Initializing..."));
         nestedZones                         = new ArrayList<String>();
         prefConfig                          = new PrefConfig(this);
         zoneConfig                          = new ZoneConfig(this);
-        executor                            = new BattleZonesCommandExecutor(this);
+        commandExecutor                     = new BattleZonesCommandExecutor(this);
         movementListener                    = new BattleZonesMovementListener(this);
+        entityListener                      = new BattleZonesEntityListener(this);
         manager                             = this.getServer().getPluginManager();
         pvpHandler                          = new PVPHandler(this);
     }
 
+    /**
+     * Provide initial setup for BattleZones. Register events, register commands
+     * and apply global plugin settings.
+     */
     private void run() {
-        getCommand("bz").setExecutor(executor);
+        getCommand("bz").setExecutor(commandExecutor);
         indexZones(true);
         zoneConfig.reloadZoneSet();
         manager.registerEvent(Event.Type.PLAYER_JOIN, pvpHandler, Event.Priority.Normal, this);
-        manager.registerEvent(Event.Type.PLAYER_QUIT, pvpHandler, Event.Priority.Normal, this);
+        manager.registerEvent(Event.Type.PLAYER_QUIT, pvpHandler, Event.Priority.Lowest, this);
         manager.registerEvent(Event.Type.PLAYER_MOVE, movementListener, Event.Priority.Normal, this);
+        manager.registerEvent(Event.Type.ENTITY_DAMAGE, entityListener, Event.Priority.Normal, this);
         LOG.log(Level.INFO, (Message.getPrefix() + getDescription().getName() + " Enabled! Version: " + getDescription().getVersion()));
     }
 
+    /**
+     * This method iterates over all registered zones and indexes them into the 
+     * global variable {@code nestedZones} according to world location and zone 
+     * name. The parameter {@code isStartup} defines whether it is indexing for
+     * the first time or not.
+     * @param isStartup Is {@code indexZones} being called from startup?
+     */
     public void indexZones(boolean isStartup) {
         Set<String> rootSet = zoneConfig.getConfig().getConfigurationSection("zones").getKeys(false);
         if (rootSet != null) {

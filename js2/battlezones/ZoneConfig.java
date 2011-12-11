@@ -16,7 +16,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
 /**
- * 
+ * This class handles zone file configurations.
  * 
  * @author Jacob Tyo
  * @version 12/10/2011
@@ -26,12 +26,19 @@ public class ZoneConfig {
     private File configFile;
     private FileConfiguration config;
     
+    /**
+     * Create a new instance of {@code ZoneConfig}.
+     * @param plugin Parent {@link BattleZones} instance.
+     */
     public ZoneConfig(BattleZones plugin)
     {
         init(plugin);
         defaults();
     }
 
+    /**
+     * Initialize all variables.
+     */
     private void init(BattleZones plugin)
     {
         this.plugin                 = plugin;
@@ -39,6 +46,9 @@ public class ZoneConfig {
         config                      = YamlConfiguration.loadConfiguration(configFile);
     }
     
+    /**
+     * Set default values if no configuration exists.
+     */
     private void defaults()
     {
         if (!getConfig().contains("zones")) {
@@ -52,6 +62,9 @@ public class ZoneConfig {
         }
     }
     
+    /**
+     * Reload the isZoneSet variable in the BattleZone object.
+     */
     public void reloadZoneSet()
     {
         boolean zonesExist = false;
@@ -62,6 +75,17 @@ public class ZoneConfig {
         plugin.isZonesSet = zonesExist;
     }
     
+    /**
+     * Adds a new zone to the zone index then saves it to the zone configuration 
+     * file.
+     * @param sender Source of the command
+     * @param zoneName Name of the new zone
+     * @param worldName Name of the world to add the zone
+     * @param initiallyEnabled Is the zone enabled on creation
+     * @param point1 South-East point of the zone
+     * @param point2 North-West point of the zone
+     * @return {@code true} if the zone was successfully created, else {@code false}
+     */
     public boolean addZone(CommandSender sender, String zoneName, String worldName, boolean initiallyEnabled, Point3i point1, Point3i point2)
     {
         String root = "zones." + worldName + "." + zoneName + ".";
@@ -93,6 +117,13 @@ public class ZoneConfig {
         return true;
     }
     
+    /**
+     * Removes a zone from the index then saves the zone configuration file.
+     * @param sender Source of the command
+     * @param zoneName Name of the zone to remove
+     * @param worldName Name of the world to remove the zone
+     * @return {@code true} if the zone was successfully removed, else {@code false}
+     */
     public boolean removeZone(CommandSender sender, String zoneName, String worldName)
     {
         if (sender.getServer().getWorld(worldName) == null) {
@@ -126,6 +157,10 @@ public class ZoneConfig {
         return true;
     }
     
+    /**
+     * Save the configuration file.
+     * @throws IOException Throws if there is a problem saving the file.
+     */
     public void saveZones() throws IOException
     {
         getConfig().options().header("Do NOT modify this document unless you know what you are doing.");
@@ -140,6 +175,10 @@ public class ZoneConfig {
         return config;
     }
 
+    /**
+     * Returns whether there are any registered zones in the index or not.
+     * @return {@code true} if no zones exist, else {@code false}
+     */
     public boolean isEmpty()
     {
         boolean isEmpty = true;

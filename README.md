@@ -20,10 +20,10 @@ Commands
 
 Permissions
 -----------
-`battlezones.help`
-`battlezones.add`
-`battlezones.remove`
-`battlezones.enable`
-`battlezones.disable`
-`battlezones.list`
-`battlezones.pvp`
+- `battlezones.help`
+- `battlezones.add`
+- `battlezones.remove`
+- `battlezones.enable`
+- `battlezones.disable`
+- `battlezones.list`
+- `battlezones.pvp`

@@ -15,7 +15,8 @@ import org.bukkit.event.player.PlayerListener;
 import org.bukkit.event.player.PlayerMoveEvent;
 
 /**
- * 
+ * Listener that fires when a player moves. This class is designed to detect whether
+ * a {@link Player} enters or leaves a registered PvP zone.
  * 
  * @author Jacob Tyo
  * @version 12/10/2011
@@ -25,11 +26,18 @@ public class BattleZonesMovementListener extends PlayerListener {
     public FileConfiguration zoneConfig;
     public FileConfiguration prefConfig;
     
+    /**
+     * Create a new instance of {@code BattleZonesMovementListener}.
+     * @param plugin Parent {@link BattleZones} instance.
+     */
     public BattleZonesMovementListener(BattleZones plugin)
     {
         init(plugin);
     }
 
+    /**
+     * Initialize all variables.
+     */
     private void init(BattleZones plugin)
     {
         this.plugin                     = plugin;
@@ -37,6 +45,14 @@ public class BattleZonesMovementListener extends PlayerListener {
         prefConfig                      = plugin.prefConfig.getConfig();
     }
     
+    /**
+     * Calculates whether a block at {@code pLocation} collides with a cube created
+     * with {@code zonePos1} and {@code zonePos2}.
+     * @param pLocation Location to detect if inside cube.
+     * @param zonePos1 Corner 1 of the collision bounds.
+     * @param zonePos2 Corner 2 of the collision bounds.
+     * @return 
+     */
     public boolean isIntersecting(Location pLocation, Point3i zonePos1, Point3i zonePos2)
     {
         if (pLocation.getBlockX() >= zonePos1.x && pLocation.getBlockX() <= zonePos2.x &&
@@ -45,14 +61,26 @@ public class BattleZonesMovementListener extends PlayerListener {
         return false;
     }
     
-    public boolean isSameBlock(Location to, Location from)
+    /**
+     * Calculates whether two {@link Location} objects point to the same {@link Block}
+     * or not.
+     * @param local1 Location to compare to local2
+     * @param local2 Location to compare to local1
+     * @return {@code true} if the two locations point to the same Block. {@code false}
+     * if not.
+     */
+    public boolean isSameBlock(Location local1, Location local2)
     {
-        if (to.getBlockX() == from.getBlockX() && to.getBlockY() == from.getBlockY() && to.getBlockZ() == from.getBlockZ()) return true;
+        if (local1.getBlockX() == local2.getBlockX() && local1.getBlockY() == local2.getBlockY() && local1.getBlockZ() == local2.getBlockZ()) return true;
         return false;
     }
-
     
-    
+    /**
+     * Every time a {@link Player} moves, determine whether they are inside an enabled
+     * zone or not. If so, determine what PvP permissions should be applied to the 
+     * player.
+     * @param event Relevant event details
+     */
     @Override
     public void onPlayerMove(PlayerMoveEvent event) {
         super.onPlayerMove(event);

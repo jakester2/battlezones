@@ -12,13 +12,12 @@ import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerListener;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 /**
- * 
+ * This class handles all PvP related control for the plugin.
  * 
  * @author Jacob Tyo
  * @version 12/10/2011
@@ -28,43 +27,81 @@ public class PVPHandler extends PlayerListener {
     public HashMap<String, Boolean> playerPvPMap;
     public HashMap<String, String> playerZoneMap;
     
+    /**
+     * Create a new instance of {@code PVPHandler}.
+     * @param plugin Parent {@link BattleZones} instance.
+     */
     public PVPHandler(BattleZones plugin)
     {
         init(plugin);
     }
     
+    /**
+     * Initialize all variables.
+     */
     private void init(BattleZones plugin) {
         this.plugin                     = plugin;
         playerPvPMap                    = new HashMap<String, Boolean>();
         playerZoneMap                   = new HashMap<String, String>();
     }
     
+    /**
+     * Returns whether PvP is enabled for a specified {@link World}.
+     * @param world World to check PvP status.
+     * @return {@code true} if the world is set to PvP, else {@code false}
+     */
     public boolean isGlobalPVPEnabled(World world)
     {
         return world.getPVP();
     }
     
+    /**
+     * Set the PvP status for a specified world.
+     * @param world World to set PvP status
+     * @param enabled PvP status to set
+     */
     public void setGlobalPVP(World world, boolean enabled)
     {
         world.setPVP(enabled);
     }
     
+    /**
+     * Returns whether PvP is enabled for a specified player.
+     * @param player Player to check PvP status
+     * @return {@code true} if the player can PvP, else {@code false}
+     */
     public boolean isPlayerPVPEnabled(Player player)
     {
         return playerPvPMap.get(player.getName());
     }
     
+    /**
+     * Returns whether the specified player has permissions to PVP.
+     * @param player Player to check permissions
+     * @return {@code true} if the player can PvP, else {@code false}
+     */
     public boolean playerHasPVPPermissions(Player player)
     {
         return player.hasPermission("battlezones.pvp");
     }
     
+    /**
+     * Set the specified players PvP status.
+     * @param player Player to set PvP status
+     * @param enabled PvP status to set
+     */
     public void setPlayerPVP(Player player, boolean enabled)
     {
         if (!playerHasPVPPermissions(player)) return;
         playerPvPMap.put(player.getName(), enabled);
     }
     
+    /**
+     * This method returns the amount of players inside a specific zone.
+     * @param world World that the zone is in
+     * @param zoneName Zone to get the number of players
+     * @return Number of players in the zone specified
+     */
     public int getNumPlayersInZone(World world, String zoneName)
     {
         int numberOfPlayers = 0;
@@ -76,6 +113,11 @@ public class PVPHandler extends PlayerListener {
         return numberOfPlayers;
     }
 
+    /**
+     * This method fires when a player logs in. If they log in inside a PvP zone,
+     * they will be set to PvP enabled.
+     * @param event Relevant event details
+     */
     @Override
     public void onPlayerJoin(PlayerJoinEvent event) {
         super.onPlayerJoin(event);
@@ -105,18 +147,19 @@ public class PVPHandler extends PlayerListener {
         }
     }
 
+    /**
+     * This method removes player zone data from memory when a player logs out.
+     * This is ran only if the "RELEASE_MEM_ON_LOGOUT" preference is set to true.
+     * @param event Relevant event details
+     */
     @Override
     public void onPlayerQuit(PlayerQuitEvent event) {
         super.onPlayerQuit(event);
-        playerPvPMap.remove(event.getPlayer().getName());
-        playerZoneMap.remove(event.getPlayer().getName());
+        if (plugin.prefConfig.getConfig().getBoolean("release_memory_on_logout"))
+        {
+            playerPvPMap.remove(event.getPlayer().getName());
+            playerZoneMap.remove(event.getPlayer().getName());
+        }
     }
-
-    @Override
-    public void onPlayerInteract(PlayerInteractEvent event) {
-        super.onPlayerInteract(event);
-    }
-    
-    
 
 }

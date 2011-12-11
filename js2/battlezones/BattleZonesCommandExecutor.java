@@ -15,9 +15,12 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 /**
+ * Listener that fires when a player enters the command associated with this plugin.
+ * This listener determines what commands were passed in the chat bar and runs its
+ * respective operation.
  * 
  * @author Jacob Tyo
- * @version 12/08/2011
+ * @version 12/10/2011
  */
 public class BattleZonesCommandExecutor implements CommandExecutor {
     public static final String CMD_USAGE_HELP           = "/bz help";
@@ -32,19 +35,36 @@ public class BattleZonesCommandExecutor implements CommandExecutor {
     public static final String CMD_DESC_REMOVE          = "Removes a PvP zone.";
     public static final String CMD_DESC_ENABLE          = "Enables the target PvP zone.";
     public static final String CMD_DESC_DISABLE         = "Disables the target PvP zone.";
-    public static final String CMD_DESC_LIST            = "Lists all PvP zones and their active states.";
+    public static final String CMD_DESC_LIST            = "Lists all PvP zones and the number of players.";
     
     private BattleZones plugin;
     private Player player;
 
+    /**
+     * Create a new instance of {@code BattleZonesCommandExecutor}.
+     * @param plugin Parent {@link BattleZones} instance.
+     */
     public BattleZonesCommandExecutor(BattleZones plugin) {
         init(plugin);
     }
     
+    /**
+     * Initialize all variables.
+     */
     private void init(BattleZones plugin) {
         this.plugin                     = plugin;
     }
 
+    /**
+     * Determines whether the command has been passed any parameters. If not, print
+     * help info to the sender. If so, pass the parameters to the {@code parseCommand}
+     * method for parsing.
+     * @param sender Source of the command
+     * @param cmd Command which was executed
+     * @param string Alias of the command which was used
+     * @param strings Passed command arguments 
+     * @return {@code true} if a valid command, otherwise {@code false}
+     */
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String string, String[] strings) {
         if (cmd.getName().equalsIgnoreCase("bz")) { // If the player typed /bz then do the following...
@@ -58,6 +78,13 @@ public class BattleZonesCommandExecutor implements CommandExecutor {
         return false;
     }
 
+    /**
+     * Prints detailed help information to the command's sender.
+     * @param sender Source of the command
+     * @param cmd Command which was executed
+     * @param string Alias of the command which was used
+     * @param strings Passed command arguments 
+     */
     private void printHelp(CommandSender sender, Command cmd, String string, String[] strings) {
         Message.sendRaw(sender, "------------ " + plugin.getDescription().getFullName() + " ------------");
         Message.sendRaw(sender, "- " + CMD_USAGE_HELP + " - " + CMD_DESC_HELP + "");
@@ -68,16 +95,25 @@ public class BattleZonesCommandExecutor implements CommandExecutor {
         Message.sendRaw(sender, "- " + CMD_USAGE_LIST + " - " + CMD_DESC_LIST + "");
     }
 
+    /**
+     * Parses the senders command and performs its respective action.
+     * @param sender Source of the command
+     * @param cmd Command which was executed
+     * @param string Alias of the command which was used
+     * @param strings Passed command arguments 
+     */
     private void parseCommand(CommandSender sender, Command cmd, String string, String[] strings) {
         if (!sender.hasPermission("battlezones." + strings[0])) {
             Message.sendRaw(sender, Message.LEVEL_ERROR, "You do not have permissions for that.");
             return;
         }
-        if (strings[0].equalsIgnoreCase("help")) // Print the help screen.
+        // Print the help screen.
+        if (strings[0].equalsIgnoreCase("help"))
         {
             printHelp(sender, cmd, string, strings);
         }
-        else if (strings[0].equalsIgnoreCase("add")) // Add a new zone.
+        // Add a new zone.
+        else if (strings[0].equalsIgnoreCase("add"))
         {
             if (player == null) {
                 Message.send(sender, Message.LEVEL_ERROR, "This command can only be ran by a player.");
@@ -89,12 +125,14 @@ public class BattleZonesCommandExecutor implements CommandExecutor {
                 }
             }
         }
-        else if (strings[0].equalsIgnoreCase("remove")) // Remove an existing zone.
+        // Remove an existing zone.
+        else if (strings[0].equalsIgnoreCase("remove"))
         {
             if (strings.length != 3)    Message.sendRaw(sender, "- " + CMD_USAGE_REMOVE + " - " + CMD_DESC_REMOVE + "");
             else                        plugin.zoneConfig.removeZone(sender, strings[2], strings[1]);
         }
-        else if (strings[0].equalsIgnoreCase("enable")) // Enable target zone.
+        // Enable target zone.
+        else if (strings[0].equalsIgnoreCase("enable"))
         {
             if (strings.length != 3) Message.sendRaw(sender, "- " + CMD_USAGE_ENABLE + " - " + CMD_DESC_ENABLE + "");
             else {
@@ -117,7 +155,8 @@ public class BattleZonesCommandExecutor implements CommandExecutor {
                 
             }                    
         }
-        else if (strings[0].equalsIgnoreCase("disable")) // Disable target zone.
+        // Disable target zone.
+        else if (strings[0].equalsIgnoreCase("disable"))
         {
             if (strings.length != 3) Message.sendRaw(sender, "- " + CMD_USAGE_DISABLE + " - " + CMD_DESC_DISABLE + "");
             else {
@@ -140,7 +179,8 @@ public class BattleZonesCommandExecutor implements CommandExecutor {
                 
             }
         }
-        else if (strings[0].equalsIgnoreCase("list")) // List all available zones.
+        // List all available zones.
+        else if (strings[0].equalsIgnoreCase("list"))
         {
             if (plugin.zoneConfig.isEmpty()) {
                 Message.send(sender, Message.LEVEL_ERROR, "No zones loaded...");
@@ -154,7 +194,8 @@ public class BattleZonesCommandExecutor implements CommandExecutor {
                 }
             }
         }
-        else // If all else fails...
+        // If all else fails...
+        else
         {
             Message.send(sender, "Cannot understand: " + strings[0]);
         }

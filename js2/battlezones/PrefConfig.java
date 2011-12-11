@@ -12,7 +12,9 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 /**
+ * This class handles config file configuration.
  * 
+ * @TODO Set preferences to static variables.
  * 
  * @author Jacob Tyo
  * @version 12/10/2011
@@ -22,12 +24,19 @@ public class PrefConfig {
     private File configFile;
     private FileConfiguration config;
     
+    /**
+     * Create a new instance of {@code PrefConfig}.
+     * @param plugin Parent {@link BattleZones} instance.
+     */
     public PrefConfig(BattleZones plugin)
     {
         init(plugin);
         defaults();
     }
 
+    /**
+     * Initialize all variables.
+     */
     private void init(BattleZones plugin)
     {
         this.plugin                 = plugin;
@@ -35,11 +44,15 @@ public class PrefConfig {
         config                      = YamlConfiguration.loadConfiguration(configFile);
     }
     
+    /**
+     * Set default values if no configuration exists.
+     */
     private void defaults()
     {
         boolean hasChanged = false;
         if (!getConfig().contains("enabled")) { getConfig().createSection("enabled"); getConfig().set("enabled", true); hasChanged = true; }
-        if (!getConfig().contains("debug")) { getConfig().createSection("debug"); getConfig().set("debug", true); hasChanged = true; }
+        if (!getConfig().contains("release_memory_on_logout")) { getConfig().createSection("release_memory_on_logout"); getConfig().set("release_memory_on_logout", true); hasChanged = true; }
+        if (!getConfig().contains("debug")) { getConfig().createSection("debug"); getConfig().set("debug", false); hasChanged = true; }
         if (hasChanged) {
             try {
                 savePrefs();
@@ -49,6 +62,10 @@ public class PrefConfig {
         }
     }
     
+    /**
+     * Save the configuration file.
+     * @throws IOException Throws if there is a problem saving the file.
+     */
     public void savePrefs() throws IOException
     {
         getConfig().options().header("Modify settings to the " + plugin.getDescription().getName() + " plugin.\n"

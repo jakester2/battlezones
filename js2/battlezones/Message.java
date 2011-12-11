@@ -10,9 +10,10 @@ import org.bukkit.command.CommandSender;
 
 /**
  * This class offers a level of abstraction for sending messages to a CommandSender.
+ * All messages sent to the user should use this class.
  * 
  * @author Jacob Tyo
- * @author 12/06/2011
+ * @author 12/10/2011
  */
 public class Message {
     public static final int LEVEL_NORMAL = 0;
@@ -31,8 +32,7 @@ public class Message {
     }
     
     /**
-     * Sends a new message to the sender and specify its print level. Will print 
-     * using LEVEL_NORMAL.
+     * Sends a new message to the sender and specify its print level.
      * @param sender Player to send the message.
      * @param level Level of importance of the message. This dictates the print 
      * color.
@@ -61,7 +61,7 @@ public class Message {
     
     /**
      * Sends a new message to the sender without a prefix and specify its print 
-     * level. Will print using LEVEL_NORMAL.
+     * level.
      * @param sender Player to send the message.
      * @param level Level of importance of the message. This dictates the print 
      * color.
