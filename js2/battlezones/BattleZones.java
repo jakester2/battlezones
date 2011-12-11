@@ -16,8 +16,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 /**
  * @TODO Refactor code
- * @TODO Document all methods
- * @TODO Fix incorrect documentation
+ * @TODO Enable option to use PVPToggle instead of built-in PvP system.
  * 
  * BattleZones is a CraftBukkit plugin.
  * 
@@ -25,7 +24,7 @@ import org.bukkit.plugin.java.JavaPlugin;
  * may enter and leave as they wish, without having to set up lobbies and matches.
  * 
  * @author Jacob Tyo
- * @version 12/10/2011
+ * @version 12/11/2011
  */
 public class BattleZones extends JavaPlugin {
     public static final Logger LOG = Logger.getLogger("Minecraft");
@@ -35,6 +34,7 @@ public class BattleZones extends JavaPlugin {
     public BattleZonesMovementListener movementListener;
     public BattleZonesEntityListener entityListener;
     public boolean isZonesSet;
+    public boolean enabled;
     public PluginManager manager;
     public PrefConfig prefConfig;
     public PVPHandler pvpHandler;
@@ -47,6 +47,7 @@ public class BattleZones extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        preprocess();
         init();
         run();
     }
@@ -55,7 +56,9 @@ public class BattleZones extends JavaPlugin {
      * Initialize all variables.
      */
     private void init() {
+        if (!enabled) return;
         LOG.log(Level.INFO, (Message.getPrefix() + "Initializing..."));
+        enabled                             = true;
         nestedZones                         = new ArrayList<String>();
         prefConfig                          = new PrefConfig(this);
         zoneConfig                          = new ZoneConfig(this);
@@ -102,6 +105,18 @@ public class BattleZones extends JavaPlugin {
                     if (!pvpHandler.isGlobalPVPEnabled(getServer().getWorld(worldName))) pvpHandler.setGlobalPVP(getServer().getWorld(worldName), true);
                 }
             }
+        }
+    }
+
+    /**
+     * This method runs a series of tests to determine the best settings to implement.
+     */
+    private void preprocess() {
+        if (!prefConfig.getConfig().getBoolean(PrefConfig.PREF_ENABLED))
+        {
+            LOG.info((Message.getPrefix() + "Plugin not enabled. See config.yml..."));
+            enabled = false;
+            return;
         }
     }
     
