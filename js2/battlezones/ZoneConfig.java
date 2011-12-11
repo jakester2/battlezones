@@ -13,11 +13,13 @@ import javax.vecmath.Point3i;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 
 /**
- *
+ * 
+ * 
  * @author Jacob Tyo
- * @version 12/08/2011
+ * @version 12/10/2011
  */
 public class ZoneConfig {
     private BattleZones plugin;
@@ -81,6 +83,13 @@ public class ZoneConfig {
         reloadZoneSet();
         BattleZones.LOG.log(Level.INFO, (Message.getPrefix() + "Add: '" + zoneName + "' registered!"));
         Message.send(sender, Message.LEVEL_SUCCESS, "Add: '" + zoneName + "' successfully registered!");
+        // Check if player is inside the zone that was created. If so, set PvP ON for the sender.
+        if (plugin.movementListener.isIntersecting(((Player) sender).getLocation(),
+                new Point3i(config.getInt(root + "x1"), config.getInt(root + "y1"), config.getInt(root + "z1")), 
+                new Point3i(config.getInt(root + "x2"), config.getInt(root + "y2"), config.getInt(root + "z2"))))
+        {
+            plugin.pvpHandler.setPlayerPVP(((Player) sender), true);
+        }
         return true;
     }
     
@@ -95,6 +104,13 @@ public class ZoneConfig {
         else {
             if (sender != null) Message.send(sender, Message.LEVEL_ERROR, "The zone '" + zoneName + "' does not exist.");
             return false;
+        }
+        // Check if player was inside the zone that was remove and not in another zone. If so, set PvP OFF for the sender.
+        if (plugin.movementListener.isIntersecting(((Player) sender).getLocation(),
+                new Point3i(config.getInt(root + "x1"), config.getInt(root + "y1"), config.getInt(root + "z1")), 
+                new Point3i(config.getInt(root + "x2"), config.getInt(root + "y2"), config.getInt(root + "z2"))))
+        {
+            plugin.pvpHandler.setPlayerPVP(((Player) sender), false);
         }
         try {
             saveZones();
