@@ -5,6 +5,7 @@
  */
 package js2.battlezones;
 
+import java.util.logging.Level;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -49,10 +50,10 @@ public class BattleZonesEntityListener extends EntityListener {
         if (e.isCancelled()) return;
         if (e instanceof EntityDamageByEntityEvent)
         {
-            Player attacker = ((Player) ((EntityDamageByEntityEvent) e).getDamager()).getPlayer();
-            Player attackee = ((Player) ((EntityDamageByEntityEvent) e).getEntity()).getPlayer();
-            boolean isAttackerPVP = plugin.pvpHandler.isPlayerPVPEnabled(attacker);
-            boolean isAttackeePVP = plugin.pvpHandler.isPlayerPVPEnabled(attackee);
+            Player attacker = ((Player) ((EntityDamageByEntityEvent) e).getDamager()).getPlayer();  BattleZones.LOG.log(Level.CONFIG, ("Attacker: " + attacker.getName()));
+            Player attackee = ((Player) ((EntityDamageByEntityEvent) e).getEntity()).getPlayer();   BattleZones.LOG.log(Level.CONFIG, ("Attackee: " + attackee.getName()));
+            boolean isAttackerPVP = plugin.pvpHandler.isPlayerPVPEnabled(attacker);                 BattleZones.LOG.log(Level.CONFIG, ("isAttackerPvP: " + isAttackerPVP));
+            boolean isAttackeePVP = plugin.pvpHandler.isPlayerPVPEnabled(attackee);                 BattleZones.LOG.log(Level.CONFIG, ("isAttackeePvP: " + isAttackeePVP));
             if (!isAttackerPVP || isAttackeePVP)
             {
                 e.setCancelled(true);
