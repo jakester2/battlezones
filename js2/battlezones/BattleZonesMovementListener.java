@@ -130,7 +130,7 @@ public class BattleZonesMovementListener extends PlayerListener {
             if (prefConfig.getBoolean(PrefConfig.PREF_DEBUG)) BattleZones.LOG.log(Level.INFO, (Message.getPrefix() + event.getPlayer().getName() + " left the zone: " + plugin.pvpHandler.playerZoneMap.get(event.getPlayer().getName())));
             plugin.pvpHandler.setPlayerPVP(event.getPlayer(), false);
             plugin.pvpHandler.playerZoneMap.put(event.getPlayer().getName(), "");
-            Message.send(event.getPlayer(), "Leaving Zone PvP " + ChatColor.RED + "OFF!");
+            Message.send(event.getPlayer(), "Leaving Zone. PvP " + ChatColor.RED + "OFF!");
         }
     }
     
