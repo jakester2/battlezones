@@ -7,6 +7,7 @@ package js2.battlezones;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.logging.Level;
 import javax.vecmath.Point3i;
 import org.bukkit.ChatColor;
 import org.bukkit.World;
@@ -20,7 +21,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
  * This class handles all PvP related control for the plugin.
  * 
  * @author Jacob Tyo
- * @version 12/11/2011
+ * @version 12/16/2011
  */
 public class PVPHandler extends PlayerListener {
     public BattleZones plugin;
@@ -39,10 +40,17 @@ public class PVPHandler extends PlayerListener {
     /**
      * Initialize all variables.
      */
-    private void init(BattleZones plugin) {
+    private void init(final BattleZones plugin) {
         this.plugin                     = plugin;
         playerPvPMap                    = new HashMap<String, Boolean>();
-        playerZoneMap                   = new HashMap<String, String>();
+        playerZoneMap                   = new HashMap<String, String>() {
+            // Allows for debug information to be sent when a value is set.
+            @Override
+            public String put(String k, String v) {
+                if (plugin.isDebug) BattleZones.LOG.log(Level.INFO, (Message.getPrefix() + "PlayerZoneMap - Key: " + k + " Val: " + v));
+                return super.put(k, v);
+            }
+        };
     }
     
     /**
