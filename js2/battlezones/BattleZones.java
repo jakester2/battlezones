@@ -35,6 +35,7 @@ public class BattleZones extends JavaPlugin {
     public BattleZonesEntityListener entityListener;
     public boolean isZonesSet;
     public boolean enabled;
+    public boolean isDebug;
     public PluginManager manager;
     public PrefConfig prefConfig;
     public PVPHandler pvpHandler;
@@ -42,7 +43,7 @@ public class BattleZones extends JavaPlugin {
     
     @Override
     public void onDisable() {
-    LOG.log(Level.INFO, (Message.getPrefix() + "Plugin Disabled!"));
+        LOG.log(Level.INFO, (Message.getPrefix() + "BattleZones Disabled!"));
     }
 
     @Override
@@ -61,6 +62,7 @@ public class BattleZones extends JavaPlugin {
         nestedZones                         = new ArrayList<String>();
         prefConfig                          = new PrefConfig(this);
         zoneConfig                          = new ZoneConfig(this);
+        isDebug                             = prefConfig.getConfig().getBoolean(PrefConfig.PREF_DEBUG);
         commandExecutor                     = new BattleZonesCommandExecutor(this);
         movementListener                    = new BattleZonesMovementListener(this);
         entityListener                      = new BattleZonesEntityListener(this);
