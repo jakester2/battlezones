@@ -86,13 +86,13 @@ public class BattleZonesCommandExecutor implements CommandExecutor {
      * @param strings Passed command arguments 
      */
     private void printHelp(CommandSender sender, Command cmd, String string, String[] strings) {
-        Message.sendRaw(sender, "------------ " + plugin.getDescription().getFullName() + " ------------");
-        Message.sendRaw(sender, "- " + CMD_USAGE_HELP + " - " + CMD_DESC_HELP + "");
-        if (sender.hasPermission("battlezones.add")) Message.sendRaw(sender, "- " + (player == null ? CMD_USAGE_ADD_CONSOLE : CMD_USAGE_ADD) + " - " + CMD_DESC_ADD + "");
-        if (sender.hasPermission("battlezones.remove")) Message.sendRaw(sender, "- " + CMD_USAGE_REMOVE + " - " + CMD_DESC_REMOVE + "");
-        if (sender.hasPermission("battlezones.enable")) Message.sendRaw(sender, "- " + CMD_USAGE_ENABLE + " - " + CMD_DESC_ENABLE + "");
-        if (sender.hasPermission("battlezones.disable")) Message.sendRaw(sender, "- " + CMD_USAGE_DISABLE + " - " + CMD_DESC_DISABLE + "");
-        if (sender.hasPermission("battlezones.list")) Message.sendRaw(sender, "- " + CMD_USAGE_LIST + " - " + CMD_DESC_LIST + "");
+        Message.sendRaw(sender, Message.LEVEL_SPECIAL, "------------ " + plugin.getDescription().getFullName() + " ------------");
+        Message.sendRaw(sender, Message.LEVEL_SUCCESS, "- " + CMD_USAGE_HELP + " - " + CMD_DESC_HELP + "");
+        if (sender.hasPermission("battlezones.add")) Message.sendRaw(sender, Message.LEVEL_SUCCESS, "- " + (player == null ? CMD_USAGE_ADD_CONSOLE : CMD_USAGE_ADD) + " - " + CMD_DESC_ADD + "");
+        if (sender.hasPermission("battlezones.remove")) Message.sendRaw(sender, Message.LEVEL_SUCCESS, "- " + CMD_USAGE_REMOVE + " - " + CMD_DESC_REMOVE + "");
+        if (sender.hasPermission("battlezones.enable")) Message.sendRaw(sender, Message.LEVEL_SUCCESS, "- " + CMD_USAGE_ENABLE + " - " + CMD_DESC_ENABLE + "");
+        if (sender.hasPermission("battlezones.disable")) Message.sendRaw(sender, Message.LEVEL_SUCCESS, "- " + CMD_USAGE_DISABLE + " - " + CMD_DESC_DISABLE + "");
+        if (sender.hasPermission("battlezones.list")) Message.sendRaw(sender, Message.LEVEL_SUCCESS, "- " + CMD_USAGE_LIST + " - " + CMD_DESC_LIST + "");
     }
 
     /**
@@ -185,12 +185,12 @@ public class BattleZonesCommandExecutor implements CommandExecutor {
             if (plugin.zoneConfig.isEmpty()) {
                 Message.send(sender, Message.LEVEL_ERROR, "No zones loaded...");
             } else {
-                Message.sendRaw(sender, "------------ Available PvP Zones ------------");
+                Message.sendRaw(sender, Message.LEVEL_SPECIAL, "------------ Available PvP Zones ------------");
                 for (Iterator<String> it = plugin.nestedZones.iterator(); it.hasNext();) {
                     String[] zoneData = it.next().split("\\.");
                     boolean isEnabled = plugin.zoneConfig.getConfig().getBoolean("zones." + zoneData[0] + "." + zoneData[1] + ".enabled");
-                    ChatColor prefix = (isEnabled) ? ChatColor.GREEN : ChatColor.RED;
-                    Message.sendRaw(sender, prefix + "- [" + zoneData[0] + "] " + zoneData[1] + " [" + plugin.pvpHandler.getNumPlayersInZone(plugin.getServer().getWorld(zoneData[0]), zoneData[1]) + "] - " + ((isEnabled) ? "Enabled" : "Disabled"));
+                    ChatColor prefix = (isEnabled) ? ChatColor.GREEN : ChatColor.DARK_GRAY;
+                    Message.sendRaw(sender, prefix + "- [" + zoneData[0] + "] [" + plugin.pvpHandler.getNumPlayersInZone(plugin.getServer().getWorld(zoneData[0]), zoneData[1]) + "] " + zoneData[1]);
                 }
             }
         }
